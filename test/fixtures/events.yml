@@ -1,0 +1,29 @@
+# == Schema Information
+#
+# Table name: events
+#
+#  id         :integer          not null, primary key
+#  course     :string
+#  type       :string
+#  date       :datetime
+#  frequency  :integer
+#  classroom  :string
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  course: MyString
+  type: 
+  date: 2015-09-18 22:18:55
+  frequency: 1
+  classroom: MyString
+
+two:
+  course: MyString
+  type: 
+  date: 2015-09-18 22:18:55
+  frequency: 1
+  classroom: MyString
