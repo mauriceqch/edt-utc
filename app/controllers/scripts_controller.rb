@@ -130,15 +130,15 @@ class ScriptsController < ApplicationController
     result['type'] = line[12..14]
 
     day_translation = Hash.new
-    day_translation['LUNDI'] = 'MONDAY'
-    day_translation['MARDI'] = 'TUESDAY'
-    day_translation['MERCREDI'] = 'WEDNESDAY'
-    day_translation['JEUDI'] = 'THURSDAY'
-    day_translation['VENDREDI'] = 'FRIDAY'
-    day_translation['SAMEDI'] = 'SATURDAY'
-    day_translation['DIMANCHE'] = 'SUNDAY'
+    day_translation['LUNDI'] = 0
+    day_translation['MARDI'] = 1
+    day_translation['MERCREDI'] = 2
+    day_translation['JEUDI'] = 3
+    day_translation['VENDREDI'] = 4
+    day_translation['SAMEDI'] = 5
+    day_translation['DIMANCHE'] = 6
 
-    result['day'] = day_translation[line[19..26].gsub('.','')].downcase
+    result['day'] = day_translation[line[19..26].gsub('.','')]
 
 
     result['st_hour'] = line[28..32]
@@ -160,27 +160,31 @@ class ScriptsController < ApplicationController
   end
 
   def semester_end
-    DateTime.new(2016,2,1)
+    DateTime.new(2015,11,1)
   end
 
   def interpret_parsed_script(parsed_script)
     cal = Icalendar::Calendar.new
 
     parsed_class = parsed_script.first
-
-    (semester_start..semester_end).step(7) do |d|
-      st_date = d.send(parsed_class["day"]).change(hour: parsed_class["st_hour"][0..1].to_i, min: parsed_class["st_hour"][3..4].to_i)
-      end_date = d.send(parsed_class["day"]).change(hour: parsed_class["end_hour"][0..1].to_i, min: parsed_class["end_hour"][3..4].to_i)
-      cal.event do |e|
-        # st_hour et end_hour format : "HH:mm"
-        e.dtstart     = st_date
-        e.dtend       = end_date
-        e.summary     = parsed_class["course"] + " - " + parsed_class["type"]
-        e.ip_class    = "PRIVATE"
+    parsed_script.each do |parsed_class|
+      (semester_start..semester_end).step(7) do |d|
+        st_date = (d.monday+parsed_class["day"]).change(hour: parsed_class["st_hour"][0..1].to_i, min: parsed_class["st_hour"][3..4].to_i)
+        end_date = (d.monday+parsed_class["day"]).change(hour: parsed_class["end_hour"][0..1].to_i, min: parsed_class["end_hour"][3..4].to_i)
+        cal.event do |e|
+          # st_hour and end_hour format : "HH:mm"
+          e.dtstart     = st_date
+          e.dtend       = end_date
+          e.summary     = parsed_class["course"] + " - " + parsed_class["type"]
+          e.ip_class    = "PRIVATE"
+        end
       end
     end
 
-
     cal
+  end
+
+  def write_cal(cal)
+    File.open('./test.ics','w') { |file| file.write(cal.to_ical) }
   end
 end
