@@ -1,3 +1,9 @@
+# Testing
+# rails console
+# controller = ScriptsController.new
+# parsed_script = controller.parse_script(Script.last.script)
+# cal = controller.interpret_parsed_script(parsed_script)
+
 class ScriptsController < ApplicationController
   before_action :set_script, only: [:show, :edit, :update, :destroy]
   require 'icalendar'
@@ -132,7 +138,7 @@ class ScriptsController < ApplicationController
     day_translation['SAMEDI'] = 'SATURDAY'
     day_translation['DIMANCHE'] = 'SUNDAY'
 
-    result['day'] = day_translation[line[19..26].gsub('.','')]
+    result['day'] = day_translation[line[19..26].gsub('.','')].downcase
 
 
     result['st_hour'] = line[28..32]
@@ -150,24 +156,31 @@ class ScriptsController < ApplicationController
   ## Output : Ical file
   ###################################################
   def semester_start
-    Date.new(2015,9,1)
+    DateTime.new(2015,9,1)
   end
 
   def semester_end
-    Date.new(2016,2,1)
+    DateTime.new(2016,2,1)
   end
 
   def interpret_parsed_script(parsed_script)
     cal = Icalendar::Calendar.new
 
+    parsed_class = parsed_script.first
 
-    cal.event do |e|
-      e.dtstart     = Icalendar::Values::Date.new('20050428')
-      e.dtend       = Icalendar::Values::Date.new('20050429')
-      e.summary     = "Meeting with the man."
-      e.ip_class    = "PRIVATE"
+    (semester_start..semester_end).step(7) do |d|
+      st_date = d.send(parsed_class["day"]).change(hour: parsed_class["st_hour"][0..1].to_i, min: parsed_class["st_hour"][3..4].to_i)
+      end_date = d.send(parsed_class["day"]).change(hour: parsed_class["end_hour"][0..1].to_i, min: parsed_class["end_hour"][3..4].to_i)
+      cal.event do |e|
+        # st_hour et end_hour format : "HH:mm"
+        e.dtstart     = st_date
+        e.dtend       = end_date
+        e.summary     = parsed_class["course"] + " - " + parsed_class["type"]
+        e.ip_class    = "PRIVATE"
+      end
     end
 
-    cal.to_ical
+
+    cal
   end
 end
