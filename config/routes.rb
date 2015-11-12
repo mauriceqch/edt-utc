@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
-  resources :events
   resources :scripts
+
+  get 'scripts/:id/export.ics' => 'scripts#export'
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

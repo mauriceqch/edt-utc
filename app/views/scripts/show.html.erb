@@ -5,5 +5,9 @@
   <%= simple_format(@script.script) %>
 </p>
 
+<p>
+  <%= link_to 'Export ICS', action: 'export' %>
+</p>
+
 <%= link_to 'Edit', edit_script_path(@script) %> |
 <%= link_to 'Back', scripts_path %>

@@ -5,7 +5,7 @@
 # cal = controller.interpret_parsed_script(parsed_script)
 
 class ScriptsController < ApplicationController
-  before_action :set_script, only: [:show, :edit, :update, :destroy]
+  before_action :set_script, only: [:show, :edit, :update, :destroy, :export]
   require 'icalendar'
 
   # GET /scripts
@@ -69,6 +69,13 @@ class ScriptsController < ApplicationController
       format.html { redirect_to scripts_url, notice: 'Script was successfully destroyed.' }
       format.json { head :no_content }
     end
+  end
+
+  def export
+    parsed_script = parse_script(@script.script)
+    cal = interpret_parsed_script(parsed_script)
+    cal.publish
+    render inline: cal.to_ical, content_type: 'text/calendar'
   end
 
   #  private
@@ -160,7 +167,19 @@ class ScriptsController < ApplicationController
   end
 
   def semester_end
-    DateTime.new(2015,11,1)
+    DateTime.new(2016,1,8)
+  end
+
+  def invalid_date(date)
+    vacances_toussaint = DateTime.new(2015,10,26)..(DateTime.new(2015,10,31)+1)
+    medians = DateTime.new(2015,11,3)..(DateTime.new(2015,11,9)+1)
+    vacances_noel = DateTime.new(2015,12,24)..(DateTime.new(2016,1,2)+1)
+
+    fetetravail = DateTime.new(2015,5,1)..DateTime.new(2015,5,2)
+    fetevictoire = DateTime.new(2015,5,8)..DateTime.new(2015,5,9)
+    fetearmistice = DateTime.new(2015,11,10)..DateTime.new(2015,11,11)
+
+    vacances_toussaint.cover?(date) || medians.cover?(date) || vacances_noel.cover?(date) || fetetravail.cover?(date) || fetevictoire.cover?(date) || fetearmistice.cover?(date)
   end
 
   def interpret_parsed_script(parsed_script)
@@ -169,15 +188,17 @@ class ScriptsController < ApplicationController
     parsed_class = parsed_script.first
     parsed_script.each do |parsed_class|
       (semester_start..semester_end).step(7) do |d|
-        st_date = (d.monday+parsed_class["day"]).change(hour: parsed_class["st_hour"][0..1].to_i, min: parsed_class["st_hour"][3..4].to_i)
-        end_date = (d.monday+parsed_class["day"]).change(hour: parsed_class["end_hour"][0..1].to_i, min: parsed_class["end_hour"][3..4].to_i)
-        cal.event do |e|
-          # st_hour and end_hour format : "HH:mm"
-          e.dtstart     = st_date
-          e.dtend       = end_date
-          e.summary     = parsed_class["course"] + " - " + parsed_class["type"]
-          e.ip_class    = "PRIVATE"
-        end
+          st_date = (d.monday+parsed_class["day"]).change(hour: parsed_class["st_hour"][0..1].to_i, min: parsed_class["st_hour"][3..4].to_i)
+          end_date = (d.monday+parsed_class["day"]).change(hour: parsed_class["end_hour"][0..1].to_i, min: parsed_class["end_hour"][3..4].to_i)
+          unless invalid_date(st_date)
+            cal.event do |e|
+              # st_hour and end_hour format : "HH:mm"
+              e.dtstart     = st_date
+              e.dtend       = end_date
+              e.summary     = parsed_class["course"] + " - " + parsed_class["type"]
+              e.ip_class    = "PRIVATE"
+            end
+          end
       end
     end
 
