@@ -11,22 +11,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150918201855) do
-
-  create_table "events", force: :cascade do |t|
-    t.string   "course"
-    t.string   "type"
-    t.datetime "date"
-    t.integer  "frequency"
-    t.string   "classroom"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
+ActiveRecord::Schema.define(version: 20151112225746) do
 
   create_table "scripts", force: :cascade do |t|
     t.text     "script"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer  "user_id"
   end
+
+  add_index "scripts", ["user_id"], name: "index_scripts_on_user_id"
+
+  create_table "users", force: :cascade do |t|
+    t.string   "username",   default: "", null: false
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+    t.string   "cn",         default: "", null: false
+    t.string   "mail",       default: "", null: false
+  end
+
+  add_index "users", ["username"], name: "index_users_on_username", unique: true
 
 end

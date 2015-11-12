@@ -31,10 +31,13 @@ class ScriptsController < ApplicationController
   # POST /scripts
   # POST /scripts.json
   def create
-    #script = parse_script(params['script']['script'])
-    #params['script']['script'] = script
+    old_script = current_user.scripts.first
+    if old_script
+      old_script.destroy
+    end
 
     @script = Script.new(script_params)
+    @script.user = current_user
 
     respond_to do |format|
       if @script.save

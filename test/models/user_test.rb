@@ -1,17 +1,18 @@
 # == Schema Information
 #
-# Table name: scripts
+# Table name: users
 #
 #  id         :integer          not null, primary key
-#  script     :text
+#  username   :string           default(""), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  user_id    :integer
+#  cn         :string           default(""), not null
+#  mail       :string           default(""), not null
 #
 
 require 'test_helper'
 
-class ScriptTest < ActiveSupport::TestCase
+class UserTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end

@@ -1,5 +1,9 @@
 Rails.application.routes.draw do
   resources :scripts
+  root to: "scripts#index"
+
+  devise_for :user
+
 
   get 'scripts/:id/export.ics' => 'scripts#export'
   # The priority is based upon order of creation: first created -> highest priority.
