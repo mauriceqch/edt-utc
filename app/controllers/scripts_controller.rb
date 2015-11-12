@@ -11,7 +11,12 @@ class ScriptsController < ApplicationController
   # GET /scripts
   # GET /scripts.json
   def index
-    @scripts = Script.all
+    @scripts = current_user.scripts
+    if @scripts.first
+      redirect_to script_url(@scripts.first)
+    else
+      redirect_to new_script_url
+    end
   end
 
   # GET /scripts/1
