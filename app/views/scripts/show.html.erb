@@ -6,6 +6,43 @@
 </p>
 
 <p>
+  <strong>Interprétation :</strong><br>
+
+  <% if @parsed_script.is_a?(String) %>
+      <%= @parsed_script %>
+  <% else %>
+
+    <table>
+      <thead>
+        <th>Course</th>
+        <th>Type</th>
+        <th>Day</th>
+        <th>Start hour</th>
+        <th>End hour</th>
+        <th>Frequency</th>
+        <th>Classroom</th>
+      </thead>
+      <tbody>
+      <% @parsed_script.each do |p| %>
+      <tr>
+        <td><%= p["course"] %></td>
+        <td><%= p["type"] %></td>
+        <td><%= Date::DAYNAMES[(p["day"]+1)%7] %></td>
+        <td><%= p["st_hour"] %></td>
+        <td><%= p["end_hour"] %></td>
+        <td><%= p["frequency"] %></td>
+        <td><%= p["classroom"] %></td>
+      </tr>
+      <% end %>
+      </tbody>
+
+    </table>
+
+  <% end %>
+
+</p>
+
+<p>
   <%= link_to 'Export ICS', action: 'export' %>
 </p>
 

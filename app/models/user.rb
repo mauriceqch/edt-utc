@@ -15,7 +15,7 @@ class User < ActiveRecord::Base
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :cas_authenticatable
 
-  has_many :scripts
+  has_one :script
 
   def cas_extra_attributes=(extra_attributes)
     extra_attributes.each do |name, value|
