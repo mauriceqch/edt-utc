@@ -29,6 +29,11 @@ class ScriptsController < ApplicationController
       end
     end
 
+    @courses = Array.new
+    @parsed_script.each do |p|
+      @courses.push(p["course"]) unless p["course"].in?(@courses)
+    end
+
   end
 
   # GET /scripts/new

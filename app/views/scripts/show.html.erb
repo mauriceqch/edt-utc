@@ -66,6 +66,11 @@
     $(document).ready(function() {
 
         // page is now ready, initialize the calendar...
+        courses = <%= @courses.to_json.html_safe %>;
+        colors = {};
+        <% @courses.each do |c| %>
+            colors["<%= c %>"] = randomColor();
+        <% end %>
 
         $('#calendar').fullCalendar({
             defaultView: 'agendaWeek',
@@ -81,7 +86,8 @@
                 {
                     title: "<%= p["course"] + " - " + p["type"] %>",
                     start: "<%= (Date.today.monday.to_datetime + p["day"]).change(hour: p["st_hour"][0..1].to_i, min: p["st_hour"][3..4].to_i).to_s %>",
-                    end: "<%= (Date.today.monday.to_datetime + p["day"]).change(hour: p["end_hour"][0..1].to_i, min: p["end_hour"][3..4].to_i).to_s %>"
+                    end: "<%= (Date.today.monday.to_datetime + p["day"]).change(hour: p["end_hour"][0..1].to_i, min: p["end_hour"][3..4].to_i).to_s %>",
+                    backgroundColor: colors["<%= p["course"] %>"]
                 }<% unless p == @parsed_script.last %>,<% end %>
 
                     <% end %>
