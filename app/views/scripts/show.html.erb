@@ -52,7 +52,10 @@
   <div class="col-md-10 col-md-offset-1 col-sm-12 col-lg-8 col-lg-offset-2">
     <div class="text-center">
       <div id="pdfbutton" class="btn btn-default">
-        <span id="calendar_btn_pdf" class="btn cal-button"><input type="hidden" id="zz_pdf" value="" />To PDF</span>
+        <span id="calendar_btn_pdf" class=""><input type="hidden" id="zz_pdf" value="" />To PDF</span>
+      </div>
+      <div id="icsbutton" class="btn btn-default">
+        <span id="calendar_btn_ics" class=""><%= link_to 'Export ICS', action: 'export' %></span>
       </div>
     </div><br>
     <div id='calendar-container'>
@@ -97,14 +100,8 @@
         })
 
         $('.fc-toolbar').remove();
-        $("#calendar_btn_pdf").button({
-            icons: {
-                primary: "ui-icon-image"
-            },
-            text: false
-        }); // $("#calendar_btn_pdf").button(
 
-        $("#calendar_btn_pdf").click(function () {
+        $("#pdfbutton").click(function () {
             html2canvas($('#calendar-container'), {
                 logging: true,
                 useCORS: true,
@@ -160,6 +157,4 @@
 
     });
 </script>
-<p>
-  <%= link_to 'Export ICS', action: 'export' %>
-</p>
+
