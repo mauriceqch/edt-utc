@@ -87,13 +87,17 @@ class ScriptsController < ApplicationController
   end
 
   def export
-    parsed_script = parse_script(@script.script)
-    cal = interpret_parsed_script(parsed_script)
-    cal.publish
-    render inline: cal.to_ical, content_type: 'text/calendar'
+    begin
+      parsed_script = parse_script(@script.script)
+      cal = interpret_parsed_script(parsed_script)
+      cal.publish
+      render inline: cal.to_ical, content_type: 'text/calendar'
+    rescue
+      render inline: "Woops, that didn't quite work !"
+    end
   end
 
-  #  private
+  private
   # Use callbacks to share common setup or constraints between actions.
   def set_script
     @script = current_user.script
@@ -116,25 +120,41 @@ class ScriptsController < ApplicationController
   # ...
   #{"course"=>"MT12", "type"=>"D 1", "day"=>"MARDI", "st_hour"=>"16:30", "end_hour"=>"18:30", "frequency"=>"1", "classroom"=>"FA518"}
   def parse_script(script)
-    result = Array.new
-    lines = Array.new
+    begin
+      result = Array.new
+      lines = Array.new
 
-    script.split("\n").each do |line|
-      l = line.split(' ')
-      lines.push(l) unless l.count == 0
+      script.split("\n").each do |line|
+        # / is for classes that have two schedules
+        # MT90 for example due to the high number of participants have two classes
+        # The two classes are separated by a /
+        # We only pick the first one
+        l = line.split('/').first.split(' ')
+        lines.push(l) unless l.count == 0
+      end
+
+      lines[2..-1].each do |l|
+        result.push(split_line(l))
+      end
+
+      result
+    rescue
+      "Can't do it, sorry :(. Please check that you have correctly copied your timetable."
     end
-
-    lines[2..-1].each do |l|
-      result.push(split_line(l))
-    end
-
-    result
   end
 
   # Analyze the line and create a hash containing the information
   def split_line(line)
-    day_translation = Hash.new
     result = Hash.new
+
+    # Treat this case
+    #  "SPJE       D 1    JEUDI... 14:15-18:15,F1,S=     *"
+    if line.last == '*'
+      line.pop
+      # Add a space for classroom parsing
+      # Hacks, hacks everywhere ...
+      line[-1] += ' '
+    end
 
     # Field 0
     # Course
@@ -144,11 +164,16 @@ class ScriptsController < ApplicationController
     # Field 1
     # Type
     i += 1
-    result['type'] = line[i]
+    type_translation = Hash.new
+    type_translation['C'] = 'C'
+    type_translation['T'] = 'TP'
+    type_translation['D'] = 'TD'
+
+    result['type'] = type_translation[line[i]] unless type_translation[line[i]].nil?
 
     # If it's not 'C' then there is another field in the line
     # Type additional info : group
-    if result['type'] != 'C'
+    if line[i] != 'C'
       i += 1
       result['type'] += line[i]
     end
@@ -176,8 +201,8 @@ class ScriptsController < ApplicationController
     result['st_hour'] = last_field_schedule.first
     result['end_hour'] = last_field_schedule.last
 
-    result['frequency'] = last_field.second[1]
-    result['classroom'] = last_field.last.split('=')[1]
+    result['frequency'] = last_field.second.last
+    result['classroom'] = last_field.last.split('=').last
     result
   end
 

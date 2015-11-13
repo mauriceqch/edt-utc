@@ -1,19 +1,22 @@
 <p id="notice"><%= notice %></p>
+<div class="text-center">
+  <%= link_to 'Edit', edit_script_path(@script) %> |
+  <%= link_to 'Erase everything !', @script, method: :delete, data: { confirm: 'Are you sure?' } %>
+</div>
 <div class="row">
-  <div class="col-md-6">
-    <p>
-      <strong>Script:</strong><br>
+  <div class="col-md-7">
+      <strong>You gave me:</strong><br>
       <%= simple_format(@script.script) %>
-    </p>
+  </div>
 
-    <p>
-      <strong>Interprétation :</strong><br>
+  <div class="col-md-5">
+      <strong>I understood:</strong><br>
 
       <% if @parsed_script.is_a?(String) %>
           <%= @parsed_script %>
       <% else %>
 
-        <table>
+        <table class="table table-responsive">
           <thead>
           <th>Course</th>
           <th>Type</th>
@@ -40,13 +43,19 @@
         </table>
 
     <% end %>
-
-    </p>
   </div>
+</div>
 
-  <div class="col-md-6">
-    <div id="pdfbutton"></div>
-    <div id='calendar' style="width: 55%;  background-color: #ffffff;"></div>
+<div class="row">
+  <div class="col-md-10 col-md-offset-1 col-sm-12 col-lg-8 col-lg-offset-2">
+    <div class="text-center">
+      <div id="pdfbutton" class="btn btn-default">
+        <span id="calendar_btn_pdf" class="btn cal-button"><input type="hidden" id="zz_pdf" value="" />To PDF</span>
+      </div>
+    </div><br>
+    <div id='calendar-container'>
+      <div id='calendar' style="width: 100%;  background-color: #ffffff; border: 1px solid black;"></div>
+    </div>
   </div>
 </div>
 
@@ -78,7 +87,6 @@
             ]
         })
 
-        $("#pdfbutton").append('<span id="calendar_btn_pdf" class="btn cal-button"><input type="hidden" id="zz_pdf" value="" />' + "PDF" + '</span>');
         $('.fc-toolbar').remove();
         $("#calendar_btn_pdf").button({
             icons: {
@@ -88,7 +96,7 @@
         }); // $("#calendar_btn_pdf").button(
 
         $("#calendar_btn_pdf").click(function () {
-            html2canvas($('#calendar'), {
+            html2canvas($('#calendar-container'), {
                 logging: true,
                 useCORS: true,
                 background: "#ffffff",
@@ -146,7 +154,3 @@
 <p>
   <%= link_to 'Export ICS', action: 'export' %>
 </p>
-
-<%= link_to 'Edit', edit_script_path(@script) %> |
-<%= link_to 'Back', scripts_path %> |
-<%= link_to 'Destroy', @script, method: :delete, data: { confirm: 'Are you sure?' } %>
