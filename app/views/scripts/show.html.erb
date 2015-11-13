@@ -45,7 +45,8 @@
   </div>
 
   <div class="col-md-6">
-    <div id='calendar' style="height: 100%; margin: 0 auto;"></div>
+    <div id="pdfbutton"></div>
+    <div id='calendar' style="width: 55%;  background-color: #ffffff;"></div>
   </div>
 </div>
 
@@ -59,7 +60,7 @@
             defaultView: 'agendaWeek',
             minTime: '8:00:00',
             maxTime: '20:00:00',
-            height: 600,
+            aspectRatio: 1.414,
             hiddenDays: [0],
             columnFormat: 'dddd',
             events: [
@@ -76,6 +77,69 @@
 
             ]
         })
+
+        $("#pdfbutton").append('<span id="calendar_btn_pdf" class="btn cal-button"><input type="hidden" id="zz_pdf" value="" />' + "PDF" + '</span>');
+        $('.fc-toolbar').remove();
+        $("#calendar_btn_pdf").button({
+            icons: {
+                primary: "ui-icon-image"
+            },
+            text: false
+        }); // $("#calendar_btn_pdf").button(
+
+        $("#calendar_btn_pdf").click(function () {
+            html2canvas($('#calendar'), {
+                logging: true,
+                useCORS: true,
+                background: "#ffffff",
+                onrendered: function (canvas) {
+                    var imgData = canvas.toDataURL("image/jpeg", 1.0);
+                    var doc = new jsPDF("landscape");
+                    doc.addImage(imgData, 'JPEG', 10, 10, 280, 190);
+                    download(doc.output(), "edt.pdf", "text/pdf");
+                }
+            }) ;
+        }); // $("#calendar_btn_pdf").click(function ()
+
+        function download(strData, strFileName, strMimeType) {
+            var D = document,
+                    A = arguments,
+                    a = D.createElement("a"),
+                    d = A[0],
+                    n = A[1],
+                    t = A[2] || "text/plain";
+
+            //build download link:
+            a.href = "data:" + strMimeType + "," + escape(strData);
+
+            if (window.MSBlobBuilder) {
+                var bb = new MSBlobBuilder();
+                bb.append(strData);
+                return navigator.msSaveBlob(bb, strFileName);
+            } /* end if(window.MSBlobBuilder) */
+
+            if ('download' in a) {
+                a.setAttribute("download", n);
+                a.innerHTML = "downloading...";
+                D.body.appendChild(a);
+                setTimeout(function() {
+                    var e = D.createEvent("MouseEvents");
+                    e.initMouseEvent("click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+                    a.dispatchEvent(e);
+                    D.body.removeChild(a);
+                }, 66);
+                return true;
+            } /* end if('download' in a) */
+
+            //do iframe dataURL download:
+            var f = D.createElement("iframe");
+            D.body.appendChild(f);
+            f.src = "data:" + (A[2] ? A[2] : "application/octet-stream") + (window.btoa ? ";base64" : "") + "," + (window.btoa ? window.btoa : escape)(strData);
+            setTimeout(function() {
+                D.body.removeChild(f);
+            }, 333);
+            return true;
+        } /* end download() */
 
     });
 </script>

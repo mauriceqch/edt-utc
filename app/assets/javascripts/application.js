@@ -16,6 +16,7 @@
 //= require turbolinks
 //= require moment
 //= require fullcalendar
+//= require 'jspdf'
 //= require_tree .
 
 
