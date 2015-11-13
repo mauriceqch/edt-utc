@@ -8,12 +8,10 @@ class ScriptsController < ApplicationController
   before_action :set_script, only: [:show, :edit, :update, :destroy, :export]
   require 'icalendar'
 
-  # GET /scripts
-  # GET /scripts.json
   def index
     @script = current_user.script
     if @script
-      redirect_to script_url(@script.first)
+      redirect_to script_url(@script)
     else
       redirect_to new_script_url
     end
@@ -22,10 +20,15 @@ class ScriptsController < ApplicationController
   # GET /scripts/1
   # GET /scripts/1.json
   def show
-    @parsed_script = parse_script(@script.script).sort! do |x, y|
-      comparison = x["day"] <=> y["day"]
-      comparison.zero? ? (x["st_hour"] <=> y["end_hour"]) : comparison
+    @parsed_script = parse_script(@script.script)
+
+    if @parsed_script.is_a?(Hash)
+      @parsed_script.sort! do |x, y|
+        comparison = x["day"] <=> y["day"]
+        comparison.zero? ? (x["st_hour"] <=> y["end_hour"]) : comparison
+      end
     end
+
   end
 
   # GET /scripts/new
@@ -40,7 +43,7 @@ class ScriptsController < ApplicationController
   # POST /scripts
   # POST /scripts.json
   def create
-    old_script = current_user.scripts.first
+    old_script = current_user.script
     if old_script
       old_script.destroy
     end
