@@ -5,12 +5,14 @@
 </div>
 <div class="row">
   <div class="col-md-7">
-      <strong>You gave me:</strong><br>
-      <%= simple_format(@script.script) %>
+      <h2>You gave me:</h2><br>
+    <pre>
+      <%= @script.script %>
+    </pre>
   </div>
 
   <div class="col-md-5">
-      <strong>I understood:</strong><br>
+      <h2>I understood:</h2><br>
 
       <% if @parsed_script.is_a?(String) %>
           <%= @parsed_script %>
@@ -69,7 +71,7 @@
             defaultView: 'agendaWeek',
             minTime: '8:00:00',
             maxTime: '20:00:00',
-            aspectRatio: 1.414,
+            contentHeight: 'auto',
             hiddenDays: [0],
             columnFormat: 'dddd',
             events: [
