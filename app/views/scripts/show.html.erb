@@ -69,7 +69,7 @@
         courses = <%= @courses.to_json.html_safe %>;
         colors = {};
         <% @courses.each do |c| %>
-            colors["<%= c %>"] = randomColor();
+            colors["<%= c %>"] = randomColor({luminosity: 'dark'});
         <% end %>
 
         $('#calendar').fullCalendar({
