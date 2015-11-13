@@ -110,51 +110,48 @@ class ScriptsController < ApplicationController
   ## Output : Hash containing information about each class (line: class, columns: information about the class)
   ###################################################
   # Parse the script and return a hash of hashes containing information about each class
+  # output (array) elements sample :
+  #{"course"=>"EI03", "type"=>"C  ", "day"=>"LUNDI", "st_hour"=>"18:45", "end_hour"=>"19:45", "frequency"=>"1", "classroom"=>"RN104"}
+  #{"course"=>"EI03", "type"=>"D 1", "day"=>"SAMEDI", "st_hour"=>" 8:15", "end_hour"=>"12:15", "frequency"=>"1", "classroom"=>"RN104"}
+  # ...
+  #{"course"=>"MT12", "type"=>"D 1", "day"=>"MARDI", "st_hour"=>"16:30", "end_hour"=>"18:30", "frequency"=>"1", "classroom"=>"FA518"}
   def parse_script(script)
-    begin
-      # Split lines into array
-      s = script.split("\n")
-      s2 = Array.new
+    result = Array.new
+    lines = Array.new
 
-      # Delete empty lines
-      s.each do |spart|
-        s2.push(spart) unless spart.length < 10
-      end
-
-      s3 = Array.new
-
-      s2[2..-1].each do |spart| s3.push(split_line(spart)) end
-      #s3 (array) elements sample :
-      #{"course"=>"EI03", "type"=>"C  ", "day"=>"LUNDI", "st_hour"=>"18:45", "end_hour"=>"19:45", "frequency"=>"1", "classroom"=>"RN104"}
-      #{"course"=>"EI03", "type"=>"D 1", "day"=>"SAMEDI", "st_hour"=>" 8:15", "end_hour"=>"12:15", "frequency"=>"1", "classroom"=>"RN104"}
-      #{"course"=>"LG30", "type"=>"D 2", "day"=>"MERCREDI", "st_hour"=>"10:15", "end_hour"=>"12:15", "frequency"=>"1", "classroom"=>"FA413"}
-      #{"course"=>"LG30", "type"=>"T 3", "day"=>"LUNDI", "st_hour"=>"13:00", "end_hour"=>"14:00", "frequency"=>"1", "classroom"=>"FA410"}
-      #{"course"=>"SR01", "type"=>"C  ", "day"=>"LUNDI", "st_hour"=>"14:15", "end_hour"=>"16:15", "frequency"=>"1", "classroom"=>"FA104"}
-      #{"course"=>"SR01", "type"=>"D 1", "day"=>"LUNDI", "st_hour"=>"16:30", "end_hour"=>"18:30", "frequency"=>"1", "classroom"=>"FA506"}
-      #{"course"=>"NF16", "type"=>"C  ", "day"=>"MERCREDI", "st_hour"=>"14:15", "end_hour"=>"16:15", "frequency"=>"1", "classroom"=>"FA100"}
-      #{"course"=>"NF16", "type"=>"D 6", "day"=>"JEUDI", "st_hour"=>"10:15", "end_hour"=>"12:15", "frequency"=>"1", "classroom"=>"FA418"}
-      #{"course"=>"NF16", "type"=>"T 7", "day"=>"VENDREDI", "st_hour"=>"16:30", "end_hour"=>"18:30", "frequency"=>"2", "classroom"=>"FB115"}
-      #{"course"=>"IA01", "type"=>"C  ", "day"=>"LUNDI", "st_hour"=>"10:15", "end_hour"=>"12:15", "frequency"=>"1", "classroom"=>"FA201"}
-      #{"course"=>"IA01", "type"=>"D 4", "day"=>"JEUDI", "st_hour"=>"14:15", "end_hour"=>"16:15", "frequency"=>"1", "classroom"=>"FA405"}
-      #{"course"=>"IA01", "type"=>"T 2", "day"=>"JEUDI", "st_hour"=>" 8:00", "end_hour"=>"10:00", "frequency"=>"2", "classroom"=>"FB115"}
-      #{"course"=>"GE37", "type"=>"C  ", "day"=>"VENDREDI", "st_hour"=>"10:15", "end_hour"=>"12:15", "frequency"=>"1", "classroom"=>"RB110"}
-      #{"course"=>"GE37", "type"=>"D 1", "day"=>"MARDI", "st_hour"=>" 9:00", "end_hour"=>"12:00", "frequency"=>"1", "classroom"=>"RO128"}
-      #{"course"=>"MT12", "type"=>"C  ", "day"=>"LUNDI", "st_hour"=>" 8:00", "end_hour"=>"10:00", "frequency"=>"1", "classroom"=>"FA202"}
-      #{"course"=>"MT12", "type"=>"D 1", "day"=>"MARDI", "st_hour"=>"16:30", "end_hour"=>"18:30", "frequency"=>"1", "classroom"=>"FA518"}
-
-      s3
-    rescue => e
-      "Entrée incorrecte"
+    script.split("\n").each do |line|
+      l = line.split(' ')
+      lines.push(l) unless l.count == 0
     end
 
+    lines[2..-1].each do |l|
+      result.push(split_line(l))
+    end
+
+    result
   end
 
   # Analyze the line and create a hash containing the information
   def split_line(line)
+    day_translation = Hash.new
     result = Hash.new
-    result['course'] = line[1..4]
 
-    result['type'] = line[12..14]
+    # Field 0
+    # Course
+    i = 0
+    result['course'] = line[i]
+
+    # Field 1
+    # Type
+    i += 1
+    result['type'] = line[i]
+
+    # If it's not 'C' then there is another field in the line
+    # Type additional info : group
+    if result['type'] != 'C'
+      i += 1
+      result['type'] += line[i]
+    end
 
     day_translation = Hash.new
     day_translation['LUNDI'] = 0
@@ -165,16 +162,23 @@ class ScriptsController < ApplicationController
     day_translation['SAMEDI'] = 5
     day_translation['DIMANCHE'] = 6
 
-    result['day'] = day_translation[line[19..26].gsub('.','')]
+    # Field 2 or 3 depending on type value
+    # Day
+    i += 1
+    result['day'] = day_translation[line[i].gsub('.', '')]
 
+    # Field 3 or 4 depending on type value
+    # Contains start hour, frequency, and classroom
+    # Sample : "8:15-12:15,F1,S=RN104"
+    last_field = line.last.split(',')
+    last_field_schedule = last_field.first.split('-')
 
-    result['st_hour'] = line[28..32]
-    result['end_hour'] = line[34..38]
+    result['st_hour'] = last_field_schedule.first
+    result['end_hour'] = last_field_schedule.last
 
-    result['frequency'] = line[41]
-    result['classroom'] = line[45..49]
+    result['frequency'] = last_field.second[1]
+    result['classroom'] = last_field.last.split('=')[1]
     result
-
   end
 
   ###################################################
