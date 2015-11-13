@@ -1,47 +1,84 @@
 <p id="notice"><%= notice %></p>
+<div class="row">
+  <div class="col-md-6">
+    <p>
+      <strong>Script:</strong><br>
+      <%= simple_format(@script.script) %>
+    </p>
 
-<p>
-  <strong>Script:</strong><br>
-  <%= simple_format(@script.script) %>
-</p>
+    <p>
+      <strong>Interprétation :</strong><br>
 
-<p>
-  <strong>Interprétation :</strong><br>
+      <% if @parsed_script.is_a?(String) %>
+          <%= @parsed_script %>
+      <% else %>
 
-  <% if @parsed_script.is_a?(String) %>
-      <%= @parsed_script %>
-  <% else %>
+        <table>
+          <thead>
+          <th>Course</th>
+          <th>Type</th>
+          <th>Day</th>
+          <th>Start hour</th>
+          <th>End hour</th>
+          <th>Frequency</th>
+          <th>Classroom</th>
+          </thead>
+          <tbody>
+          <% @parsed_script.each do |p| %>
+              <tr>
+                <td><%= p["course"] %></td>
+                <td><%= p["type"] %></td>
+                <td><%= Date::DAYNAMES[(p["day"]+1)%7] %></td>
+                <td><%= p["st_hour"] %></td>
+                <td><%= p["end_hour"] %></td>
+                <td><%= p["frequency"] %></td>
+                <td><%= p["classroom"] %></td>
+              </tr>
+          <% end %>
+          </tbody>
 
-    <table>
-      <thead>
-        <th>Course</th>
-        <th>Type</th>
-        <th>Day</th>
-        <th>Start hour</th>
-        <th>End hour</th>
-        <th>Frequency</th>
-        <th>Classroom</th>
-      </thead>
-      <tbody>
-      <% @parsed_script.each do |p| %>
-      <tr>
-        <td><%= p["course"] %></td>
-        <td><%= p["type"] %></td>
-        <td><%= Date::DAYNAMES[(p["day"]+1)%7] %></td>
-        <td><%= p["st_hour"] %></td>
-        <td><%= p["end_hour"] %></td>
-        <td><%= p["frequency"] %></td>
-        <td><%= p["classroom"] %></td>
-      </tr>
-      <% end %>
-      </tbody>
+        </table>
 
-    </table>
+    <% end %>
 
-  <% end %>
+    </p>
+  </div>
 
-</p>
+  <div class="col-md-6">
+    <div id='calendar' style="height: 100%; margin: 0 auto;"></div>
+  </div>
+</div>
 
+
+<script>
+    $(document).ready(function() {
+
+        // page is now ready, initialize the calendar...
+
+        $('#calendar').fullCalendar({
+            defaultView: 'agendaWeek',
+            minTime: '8:00:00',
+            maxTime: '20:00:00',
+            height: 600,
+            hiddenDays: [0],
+            columnFormat: 'dddd',
+            events: [
+            <% unless @parsed_script.is_a?(String) %>
+                    <% @parsed_script.each do |p| %>
+                {
+                    title: "<%= p["course"] + " - " + p["type"] %>",
+                    start: "<%= (Date.today.monday.to_datetime + p["day"]).change(hour: p["st_hour"][0..1].to_i, min: p["st_hour"][3..4].to_i).to_s %>",
+                    end: "<%= (Date.today.monday.to_datetime + p["day"]).change(hour: p["end_hour"][0..1].to_i, min: p["end_hour"][3..4].to_i).to_s %>"
+                }<% unless p == @parsed_script.last %>,<% end %>
+
+                    <% end %>
+            <% end %>
+
+            ]
+        })
+
+    });
+</script>
 <p>
   <%= link_to 'Export ICS', action: 'export' %>
 </p>

@@ -30,6 +30,11 @@ gem 'icalendar'
 gem 'devise'
 gem 'devise_cas_authenticatable'
 
+gem 'fullcalendar-rails'
+gem 'momentjs-rails'
+
+gem 'bootstrap-sass'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
