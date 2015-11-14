@@ -11,6 +11,7 @@
 
 class Script < ActiveRecord::Base
   validates :user, presence: true
+  validates :script, presence: true
 
   belongs_to :user
 end

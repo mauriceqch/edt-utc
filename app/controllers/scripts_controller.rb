@@ -20,19 +20,25 @@ class ScriptsController < ApplicationController
   # GET /scripts/1
   # GET /scripts/1.json
   def show
-    @parsed_script = parse_script(@script.script)
+    begin
+      @parsed_script = parse_script(@script.script)
 
-    if @parsed_script.is_a?(Hash)
-      @parsed_script.sort! do |x, y|
-        comparison = x["day"] <=> y["day"]
-        comparison.zero? ? (x["st_hour"] <=> y["end_hour"]) : comparison
+      if @parsed_script.is_a?(Hash)
+        @parsed_script.sort! do |x, y|
+          comparison = x["day"] <=> y["day"]
+          comparison.zero? ? (x["st_hour"] <=> y["end_hour"]) : comparison
+        end
       end
+
+      @courses = Array.new
+      @parsed_script.each do |p|
+        @courses.push(p["course"]) unless p["course"].in?(@courses)
+      end
+    rescue
+      @script.destroy unless @script.nil?
+      redirect_to new_script_path, flash: {error: 'Woops ~ Don\'t like it ~'}
     end
 
-    @courses = Array.new
-    @parsed_script.each do |p|
-      @courses.push(p["course"]) unless p["course"].in?(@courses)
-    end
 
   end
 

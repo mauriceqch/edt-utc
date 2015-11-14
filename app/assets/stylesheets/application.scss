@@ -17,3 +17,10 @@
 
 @import "bootstrap-sprockets";
 @import "bootstrap";
+
+// Horizontal scrolling for pre
+pre {
+  overflow: auto;
+  word-wrap: normal;
+  white-space: pre;
+}

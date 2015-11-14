@@ -11,11 +11,11 @@
     </div>
   <% end %>
 
-  <div class="field">
-    <%= f.label :script %><br>
-    <%= f.text_area :script %>
+  <div class="form-group">
+    <%= f.label 'Timetable' %><br>
+    <%= f.text_area :script, class: 'form-control', style: 'height: 500px;' %>
   </div>
   <div class="actions">
-    <%= f.submit %>
+    <%= f.submit 'Submit', class: 'btn btn-default' %>
   </div>
 <% end %>
