@@ -20,9 +20,9 @@
   </div>
 
   <div class="col-md-5">
-      <% if @parsed_script.is_a?(String) %>
-          <%= @parsed_script %>
-      <% else %>
+    <% if @parsed_script.is_a?(String) %>
+        <%= @parsed_script %>
+    <% else %>
 
         <table class="table table-responsive">
           <thead>
@@ -92,10 +92,30 @@
 
         // page is now ready, initialize the calendar...
         courses = <%= @courses.to_json.html_safe %>;
+        courses_events = [
+            <% unless @parsed_script.is_a?(String) %>
+            <% @parsed_script.each do |p| %>
+            {
+                title: "<%= p["course"] + " - " + p["type"] %>",
+                start: "<%= (Date.today.monday.to_datetime + p["day"]).change(hour: p["st_hour"][0..1].to_i, min: p["st_hour"][3..4].to_i).to_s %>",
+                end: "<%= (Date.today.monday.to_datetime + p["day"]).change(hour: p["end_hour"][0..1].to_i, min: p["end_hour"][3..4].to_i).to_s %>"
+            }<% unless p == @parsed_script.last %>,<% end %>
+            <% end %>
+            <% end %>
+        ];
+
         colors = {};
-        <% @courses.each do |c| %>
-            colors["<%= c %>"] = randomColor({luminosity: 'dark'});
-        <% end %>
+        for(var i = 0; i < courses.length; i++) {
+            colors[courses[i]] = randomColor({luminosity: 'dark'});
+        }
+
+        function eventCourse(event) {
+            return event.title.substr(0,4);
+        }
+
+        for(var i = 0; i < courses_events.length; i++) {
+            courses_events[i].backgroundColor = colors[eventCourse(courses_events[i])];
+        }
 
         $('#calendar').fullCalendar({
             defaultView: 'agendaWeek',
@@ -105,27 +125,14 @@
             contentHeight: 'auto',
             hiddenDays: [0],
             columnFormat: 'dddd',
-            events: [
-            <% unless @parsed_script.is_a?(String) %>
-                    <% @parsed_script.each do |p| %>
-                {
-                    title: "<%= p["course"] + " - " + p["type"] %>",
-                    start: "<%= (Date.today.monday.to_datetime + p["day"]).change(hour: p["st_hour"][0..1].to_i, min: p["st_hour"][3..4].to_i).to_s %>",
-                    end: "<%= (Date.today.monday.to_datetime + p["day"]).change(hour: p["end_hour"][0..1].to_i, min: p["end_hour"][3..4].to_i).to_s %>",
-                    backgroundColor: colors["<%= p["course"] %>"]
-                }<% unless p == @parsed_script.last %>,<% end %>
-
-                    <% end %>
-            <% end %>
-            ],
+            events: courses_events,
             eventClick: function(event, element) {
 
-                event_course = event.title.substr(0,3);
                 color = $('#selected_color').val();
 
                 $('#calendar').fullCalendar('updateEvent', event);
                 var events = $('#calendar').fullCalendar('clientEvents', function(evt) {
-                    return evt.title.substr(0,3) == event_course;
+                    return eventCourse(evt) == eventCourse(event);
                 });
                 for (var i = 0; i < events.length; i++) {
                     if (color != "") {
