@@ -1,18 +1,25 @@
-<div class="text-center">
-  <%= link_to 'Edit', edit_script_path(@script) %> |
-  <%= link_to 'Erase everything !', @script, method: :delete, data: { confirm: 'Are you sure?' } %>
-</div>
 <div class="row">
-  <div class="col-md-7">
-      <h2>You gave me:</h2><br>
+  <div class="text-center">
+    <%= link_to 'Edit', edit_script_path(@script), class: 'btn btn-default' %>
+    <%= link_to 'Erase everything !', @script, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-default' %>
+  </div>
+  <div class="text-center">
+    <h1>Data</h1>
+  </div>
+</div>
+<br>
+<div class="row">
+  <div class="col-md-5">
     <pre>
       <%= @script.script %>
     </pre>
   </div>
 
-  <div class="col-md-5">
-      <h2>I understood:</h2><br>
+  <div class="col-md-2 text-center">
+    <%= fa_icon 'arrow-right', class: 'fa-5x' %>
+  </div>
 
+  <div class="col-md-5">
       <% if @parsed_script.is_a?(String) %>
           <%= @parsed_script %>
       <% else %>
@@ -47,6 +54,15 @@
   </div>
 </div>
 
+<hr/>
+
+<div class="row text-center">
+  <%= fa_icon 'arrow-down', class: 'fa-5x' %>
+</div>
+<div class="text-center">
+  <h1>Timetable</h1>
+</div>
+
 <div class="row">
   <div class="col-md-10 col-md-offset-1 col-sm-12 col-lg-8 col-lg-offset-2">
     <div class="text-center">
@@ -54,8 +70,11 @@
         <span id="calendar_btn_pdf" class=""><input type="hidden" id="zz_pdf" value="" />To PDF</span>
       </div>
       <div id="icsbutton" class="btn btn-default">
-        <span id="calendar_btn_ics" class=""><%= link_to 'Export ICS', action: 'export' %></span>
+        <span id="calendar_btn_ics" class=""><%= link_to 'Export ICS', { action: 'export' }, { style: 'color: black;' } %></span>
       </div>
+    </div><br>
+    <div>
+
     </div><br>
     <div id='calendar-container'>
       <div id='calendar' style="width: 100%;  background-color: #ffffff; border: 1px solid black;"></div>

@@ -17,6 +17,7 @@
 //= require moment
 //= require fullcalendar
 //= require 'jspdf'
-//= require_tree .
+//= require html2canvas
+//= require randomColor
 
 

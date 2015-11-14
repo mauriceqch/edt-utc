@@ -4,6 +4,8 @@
 # parsed_script = controller.parse_script(Script.last.script)
 # cal = controller.interpret_parsed_script(parsed_script)
 
+# TODO https://github.com/norman/friendly_id
+
 class ScriptsController < ApplicationController
   before_action :set_script, only: [:show, :edit, :update, :destroy, :export]
   require 'icalendar'
@@ -74,15 +76,12 @@ class ScriptsController < ApplicationController
   end
 
   # PATCH/PUT /scripts/1
-  # PATCH/PUT /scripts/1.json
   def update
     respond_to do |format|
       if @script.update(script_params)
         format.html { redirect_to @script, notice: 'Script was successfully updated.' }
-        format.json { render :show, status: :ok, location: @script }
       else
         format.html { render :edit }
-        format.json { render json: @script.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -93,7 +92,6 @@ class ScriptsController < ApplicationController
     @script.destroy
     respond_to do |format|
       format.html { redirect_to scripts_url, notice: 'Script was successfully destroyed.' }
-      format.json { head :no_content }
     end
   end
 
