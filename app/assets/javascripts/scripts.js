@@ -23,6 +23,7 @@ $(document).ready(function() {
         allDaySlot: false,
         contentHeight: 'auto',
         hiddenDays: [0],
+        firstDay: 1,
         columnFormat: 'dddd',
         events: courses_events,
         eventClick: function(event, element) {
