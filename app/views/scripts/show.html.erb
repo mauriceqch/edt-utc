@@ -3,12 +3,12 @@
     <%= link_to 'Edit', edit_script_path(@script), class: 'btn btn-default' %>
     <%= link_to 'Erase everything !', @script, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-default' %>
   </div>
-  <div class="text-center">
-    <h1>Data</h1>
-  </div>
 </div>
-<br>
+<hr/>
 <div class="row">
+  <div class="text-center">
+    <h1><%= fa_icon "database" %> Data <%= fa_icon "database" %></h1>
+  </div>
   <div class="col-md-5">
     <pre>
       <%= @script.script %>
@@ -60,7 +60,7 @@
   <%= fa_icon 'arrow-down', class: 'fa-5x' %>
 </div>
 <div class="text-center">
-  <h1>Timetable</h1>
+  <h1><%= fa_icon "table" %> Timetable <%= fa_icon "table" %></h1>
 </div>
 
 <div class="row">
@@ -73,9 +73,12 @@
         <span id="calendar_btn_ics" class=""><%= link_to 'Export ICS', { action: 'export' }, { style: 'color: black;' } %></span>
       </div>
     </div><br>
-    <div>
-
-    </div><br>
+    <div class="form-group form-inline clearfix">
+      <div class="pull-left">
+        <input id="selected_color" class="form-control" style="width: 150px"></input>
+      </div>
+      <span class="alert alert-info pull-right"><%= fa_icon 'info-circle' %> Select a color on the left and click on an event to change its colors</span>
+    </div>
     <div id='calendar-container'>
       <div id='calendar' style="width: 100%;  background-color: #ffffff; border: 1px solid black;"></div>
     </div>
@@ -85,6 +88,7 @@
 
 <script>
     $(document).ready(function() {
+        $('#selected_color').minicolors({theme: 'bootstrap'})
 
         // page is now ready, initialize the calendar...
         courses = <%= @courses.to_json.html_safe %>;
@@ -113,8 +117,24 @@
 
                     <% end %>
             <% end %>
+            ],
+            eventClick: function(event, element) {
 
-            ]
+                event_course = event.title.substr(0,3);
+                color = $('#selected_color').val();
+
+                $('#calendar').fullCalendar('updateEvent', event);
+                var events = $('#calendar').fullCalendar('clientEvents', function(evt) {
+                    return evt.title.substr(0,3) == event_course;
+                });
+                for (var i = 0; i < events.length; i++) {
+                    if (color != "") {
+                        events[i].backgroundColor = color;
+                        $('#calendar').fullCalendar('updateEvent', events[i]);
+                    }
+                }
+
+            }
         })
 
         $('.fc-toolbar').remove();
@@ -130,7 +150,7 @@
                     doc.addImage(imgData, 'JPEG', 10, 10, 280, 190);
                     download(doc.output(), "edt.pdf", "text/pdf");
                 }
-            }) ;
+            });
         }); // $("#calendar_btn_pdf").click(function ()
 
         function download(strData, strFileName, strMimeType) {

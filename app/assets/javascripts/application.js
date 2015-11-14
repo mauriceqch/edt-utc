@@ -19,5 +19,6 @@
 //= require 'jspdf'
 //= require html2canvas
 //= require randomColor
+//= require jquery.minicolors
 
 
