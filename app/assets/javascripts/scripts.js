@@ -52,9 +52,18 @@ $(document).ready(function() {
             useCORS: true,
             background: "#ffffff",
             onrendered: function (canvas) {
-                var imgData = canvas.toDataURL("image/jpeg", 1.0);
+                var imgData = canvas.toDataURL("image/jpeg");
+		var imgTemp = new Image;
+		imgTemp.src = imgData;
+		var ratio = imgTemp.width / imgTemp.height;
+		
                 var doc = new jsPDF("landscape");
-                doc.addImage(imgData, 'JPEG', 10, 10, 280, 190);
+		if (ratio > 1.414) {
+                	doc.addImage(imgData, 'jpeg', 10, 210-(277/ratio), 277, 277/ratio);
+		} else {
+                	doc.addImage(imgData, 'jpeg', (297-(190*ratio))/2, 10, 190*ratio, 190);
+		}
+
                 download(doc.output(), "edt.pdf", "text/pdf");
             }
         });
