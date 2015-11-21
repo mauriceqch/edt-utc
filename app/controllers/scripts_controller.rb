@@ -147,11 +147,18 @@ class ScriptsController < ApplicationController
         # MT90 for example due to the high number of participants have two classes
         # The two classes are separated by a /
         # We only pick the first one
-        l = line.split('/').first.split(' ')
-        lines.push(l) unless l.count == 0
+        l = line.split('/').first.nil? ? nil : line.split('/').first.split(' ')
+        lines.push(l) unless l.nil? || l.count == 0
       end
 
-      lines[2..-1].each do |l|
+      # Get rid of the first line : "---...---" (dashes) if it's present
+      if lines[0][0].chars.to_a.uniq.count < 3
+        lines.delete_at(0)
+      end
+
+      # lines[0] should contain user info
+      # lines[1..-1] should contain courses info
+      lines[1..-1].each do |l|
         result.push(split_line(l))
       end
 
