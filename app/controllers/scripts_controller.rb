@@ -51,8 +51,6 @@ class ScriptsController < ApplicationController
       @script.destroy unless @script.nil?
       redirect_to new_script_path, flash: {error: 'Woops ~ Don\'t like it ~'}
     end
-
-
   end
 
   # GET /scripts/new
@@ -189,14 +187,36 @@ class ScriptsController < ApplicationController
     type_translation['T'] = 'TP'
     type_translation['D'] = 'TD'
 
-    result['type'] = type_translation[line[i]] unless type_translation[line[i]].nil?
+    if line[i].length > 1
+      # Case : length : 3
+      #  "SPJE       D10    JEUDI... 14:15-18:15,F1,S=     *"
+      # Cause : the type and number of groups take up to three characters
+      # When the number of groups is >= 10 there is no space between
+      # type and number
+      # "D10" : not separated by a space
+      # Consequence : the number of elements is diminished by one
+      # We have to do some parsing on that element
+      result['type'] = type_translation[line[i][0]] unless type_translation[line[i][0]].nil?
 
-    # If it's not 'C' then there is another field in the line
-    # Type additional info : group
-    if line[i] != 'C'
-      i += 1
-      result['type'] += line[i]
+      # If it's not 'C' then there is another field in the line
+      # Type additional info : group
+      if line[i] != 'C'
+        result['type'] += line[i][1..2]
+      end
+    else
+      # Case : length : 1
+      # "D" for example
+      result['type'] = type_translation[line[i]] unless type_translation[line[i]].nil?
+
+      # If it's not 'C' then there is another field in the line
+      # Type additional info : number of group
+      # Example : for "D 1" the number of the group is "1"
+      if line[i] != 'C'
+        i += 1
+        result['type'] += line[i]
+      end
     end
+
 
     day_translation = Hash.new
     day_translation['LUNDI'] = 0
