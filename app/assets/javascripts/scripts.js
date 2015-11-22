@@ -45,7 +45,14 @@ $(document).ready(function() {
     })
 
     $('.fc-toolbar').remove();
-
+    $("#pngbutton").click(function () {
+html2canvas($("#calendar"), {
+     onrendered: function (canvas) {
+         // canvas is the final rendered <canvas> element
+         var myImage = canvas.toDataURL("image/png");
+         window.open(myImage);
+     }})
+ });
     $("#pdfbutton").click(function () {
         html2canvas($('#calendar-container'), {
             logging: true,
@@ -55,6 +62,7 @@ $(document).ready(function() {
                 var imgData = canvas.toDataURL("image/jpeg");
 		var imgTemp = new Image;
 		imgTemp.src = imgData;
+        // Keep image ratio while inserting into PDF
 		var ratio = imgTemp.width / imgTemp.height;
 		
                 var doc = new jsPDF("landscape");
