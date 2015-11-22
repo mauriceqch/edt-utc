@@ -115,7 +115,7 @@ class ScriptsController < ApplicationController
     end
   end
 
-  private
+  #private
   # Use callbacks to share common setup or constraints between actions.
   def set_script
     @script = current_user.script
@@ -156,9 +156,13 @@ class ScriptsController < ApplicationController
         lines.delete_at(0)
       end
 
-      # lines[0] should contain user info
-      # lines[1..-1] should contain courses info
-      lines[1..-1].each do |l|
+      # Get rid of the second line : "login semester numberOfCourses course1 course2 ..." if it's present
+      if lines[0][0].length == 8
+        lines.delete_at(0)
+      end
+
+      # lines[0..-1] should contain courses info
+      lines[0..-1].each do |l|
         result.push(split_line(l))
       end
 
