@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151114174028) do
+ActiveRecord::Schema.define(version: 20151122134806) do
 
   create_table "friendly_id_slugs", force: :cascade do |t|
     t.string   "slug",                      null: false
@@ -37,11 +37,12 @@ ActiveRecord::Schema.define(version: 20151114174028) do
   add_index "scripts", ["user_id"], name: "index_scripts_on_user_id"
 
   create_table "users", force: :cascade do |t|
-    t.string   "username",   default: "", null: false
-    t.datetime "created_at",              null: false
-    t.datetime "updated_at",              null: false
-    t.string   "cn",         default: "", null: false
-    t.string   "mail",       default: "", null: false
+    t.string   "username",   default: "",    null: false
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+    t.string   "cn",         default: "",    null: false
+    t.string   "mail",       default: "",    null: false
+    t.boolean  "is_admin",   default: false
   end
 
   add_index "users", ["username"], name: "index_users_on_username", unique: true
