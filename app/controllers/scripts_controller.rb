@@ -296,6 +296,7 @@ class ScriptsController < ApplicationController
             e.dtstart = st_date
             e.dtend = end_date
             e.summary = parsed_class["course"] + " - " + parsed_class["type"]
+            e.location = parsed_class["classroom"]
             e.ip_class = "PRIVATE"
           end
         end
