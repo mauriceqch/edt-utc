@@ -270,16 +270,20 @@ class ScriptsController < ApplicationController
     DateTime.new(2016, 1, 8)
   end
 
+  def holiday_all
+    Rails.cache.fetch("holiday_all", expires_in: 1.day) do
+      Holiday.all
+    end
+  end
+
   def invalid_date(date)
-    vacances_toussaint = DateTime.new(2015, 10, 26)..(DateTime.new(2015, 10, 31)+1)
-    medians = DateTime.new(2015, 11, 3)..(DateTime.new(2015, 11, 9)+1)
-    vacances_noel = DateTime.new(2015, 12, 24)..(DateTime.new(2016, 1, 2)+1)
+    invalid = false
 
-    fetetravail = DateTime.new(2015, 5, 1)..DateTime.new(2015, 5, 2)
-    fetevictoire = DateTime.new(2015, 5, 8)..DateTime.new(2015, 5, 9)
-    fetearmistice = DateTime.new(2015, 11, 10)..DateTime.new(2015, 11, 11)
+    holiday_all.all.each do |h|
+      invalid = invalid || h.get_range.cover?(date)
+    end
 
-    vacances_toussaint.cover?(date) || medians.cover?(date) || vacances_noel.cover?(date) || fetetravail.cover?(date) || fetevictoire.cover?(date) || fetearmistice.cover?(date)
+    invalid
   end
 
   def interpret_parsed_script(parsed_script)
@@ -301,6 +305,16 @@ class ScriptsController < ApplicationController
           end
         end
       end
+    end
+    Holiday.all.each do |h|
+        cal.event do |e|
+          e.dtstart = h.begin_at
+          e.dtstart.ical_params = { "VALUE" => "DATE" }
+          e.dtend = h.end_at
+          e.dtend.ical_params = { "VALUE" => "DATE" }
+          e.summary = h.name
+          e.ip_class = "PRIVATE"
+        end
     end
 
     cal
