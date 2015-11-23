@@ -115,7 +115,7 @@ class ScriptsController < ApplicationController
     end
   end
 
-  #private
+  private
   # Use callbacks to share common setup or constraints between actions.
   def set_script
     @script = current_user.script
@@ -160,6 +160,12 @@ class ScriptsController < ApplicationController
       if lines[0][0].length == 8
         lines.delete_at(0)
       end
+
+      # Get rid of the last line : "LE SERVICE des MOYENS d'ENSEIGNEMENT VOUS SOUHAITE BON COURAGE"
+      if lines.last.include?("SERVICE") || lines.last.include?("ENSEIGNEMENT") || lines.last.include?("COURAGE")
+        lines.delete_at(lines.size - 1)
+      end
+
 
       # lines[0..-1] should contain courses info
       lines[0..-1].each do |l|
