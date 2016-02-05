@@ -5,7 +5,27 @@ class Course
   attr_accessor :course, :type, :day, :st_hour, :end_hour, :frequency, :classroom
 
   # Analyze the line and create a Course object containing the information
+  # First, try with regex, fallback on ruby parsing
   def initialize(line)
+    match = /(\w+)\s*(\w+)\s*(\d*)\s*(\w+)[\.]*\s*(\d+:\d+)-(\d\d:\d\d),F(\d),S=\s*(\w*).*/.match(line.join(' '))
+    if match
+      captures = match.captures
+      # There should be 8 captures
+      # course, type, group, day, st_hour, end_hour, frequency, classroom
+      if captures.length == 8
+        @course, @type, group, @day, @st_hour, @end_hour, @frequency, @classroom = captures
+        @type = translate_type @type
+        @day = translate_day @day
+        @type += group
+      else
+        ruby_parse(line)
+      end
+    else
+      ruby_parse(line)
+    end
+  end
+
+  def ruby_parse(line)
     # Treat this case
     #  "SPJE       D 1    JEUDI... 14:15-18:15,F1,S=     *"
     if line.last == '*'
@@ -23,10 +43,6 @@ class Course
     # Field 1
     # Type
     i += 1
-    type_translation = Hash.new
-    type_translation['C'] = 'C'
-    type_translation['T'] = 'TP'
-    type_translation['D'] = 'TD'
 
     if line[i].length > 1
       # Case : length : 3
@@ -37,7 +53,7 @@ class Course
       # "D10" : not separated by a space
       # Consequence : the number of elements is diminished by one
       # We have to do some parsing on that element
-      @type = type_translation[line[i][0]] unless type_translation[line[i][0]].nil?
+      @type = translate_type(line[i][0]) unless translate_type(line[i][0]).nil?
 
       # If it's not 'C' then there is another field in the line
       # Type additional info : group
@@ -47,7 +63,7 @@ class Course
     else
       # Case : length : 1
       # "D" for example
-      @type = type_translation[line[i]] unless type_translation[line[i]].nil?
+      @type = translate_type(line[i]) unless translate_type(line[i]).nil?
 
       # If it's not 'C' then there is another field in the line
       # Type additional info : number of group
@@ -58,20 +74,10 @@ class Course
       end
     end
 
-
-    day_translation = Hash.new
-    day_translation['LUNDI'] = 0
-    day_translation['MARDI'] = 1
-    day_translation['MERCREDI'] = 2
-    day_translation['JEUDI'] = 3
-    day_translation['VENDREDI'] = 4
-    day_translation['SAMEDI'] = 5
-    day_translation['DIMANCHE'] = 6
-
     # Field 2 or 3 depending on type value
     # Day
     i += 1
-    @day = day_translation[line[i].gsub('.', '')]
+    @day = translate_day(line[i].gsub('.', ''))
 
     # Field 3 or 4 depending on type value
     # Contains start hour, frequency, and classroom
@@ -84,6 +90,29 @@ class Course
 
     @frequency = last_field.second.last
     @classroom = last_field.last.split('=').last
+  end
+
+  private
+  def translate_type(type)
+    type_translation = Hash.new
+    type_translation['C'] = 'C'
+    type_translation['T'] = 'TP'
+    type_translation['D'] = 'TD'
+
+    type_translation[type]
+  end
+
+  def translate_day(day)
+    day_translation = Hash.new
+    day_translation['LUNDI'] = 0
+    day_translation['MARDI'] = 1
+    day_translation['MERCREDI'] = 2
+    day_translation['JEUDI'] = 3
+    day_translation['VENDREDI'] = 4
+    day_translation['SAMEDI'] = 5
+    day_translation['DIMANCHE'] = 6
+
+    day_translation[day]
   end
 
 end
