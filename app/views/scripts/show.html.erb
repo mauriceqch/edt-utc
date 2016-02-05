@@ -43,13 +43,13 @@
           <tbody>
           <% @parsed_script.each do |p| %>
               <tr>
-                <td><%= p["course"] %></td>
-                <td><%= p["type"] %></td>
-                <td><%= Date::DAYNAMES[(p["day"]+1)%7] %></td>
-                <td><%= p["st_hour"] %></td>
-                <td><%= p["end_hour"] %></td>
-                <td><%= p["frequency"] %></td>
-                <td><%= p["classroom"] %></td>
+                <td><%= p.course %></td>
+                <td><%= p.type %></td>
+                <td><%= Date::DAYNAMES[(p.day+1)%7] %></td>
+                <td><%= p.st_hour %></td>
+                <td><%= p.end_hour %></td>
+                <td><%= p.frequency %></td>
+                <td><%= p.classroom %></td>
               </tr>
           <% end %>
           </tbody>

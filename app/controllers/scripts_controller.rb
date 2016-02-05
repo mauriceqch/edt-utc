@@ -25,24 +25,24 @@ class ScriptsController < ApplicationController
 
       # Sort @parsed_script with day and st_hour
       @parsed_script.sort! do |x, y|
-        comparison = x["day"] <=> y["day"]
-        comparison.zero? ? (x["st_hour"] <=> y["end_hour"]) : comparison
+        comparison = x.day <=> y.day
+        comparison.zero? ? (x.st_hour <=> y.end_hour) : comparison
       end
 
       # construct array of courses
       @courses = Array.new(@parsed_script.length)
       @parsed_script.each do |p|
-        @courses.push(p["course"]) unless p["course"].in?(@courses)
+        @courses.push(p.course) unless p.course.in?(@courses)
       end
 
       # construct courses_events json object for fullcalendar
       @courses_events = Array.new(@parsed_script.length) { Hash.new }
       i = 0
       @parsed_script.each do |p|
-        @courses_events[i]["title"] = p["course"] + " - " + p["type"]
-        tempday = Date.today.monday.to_datetime + p["day"]
-        @courses_events[i]["start"] = tempday.change(hour: p["st_hour"][0..1].to_i, min: p["st_hour"][3..4].to_i).to_s
-        @courses_events[i]["end"] = tempday.change(hour: p["end_hour"][0..1].to_i, min: p["end_hour"][3..4].to_i).to_s
+        @courses_events[i]["title"] = p.course + " - " + p.type
+        tempday = Date.today.monday.to_datetime + p.day
+        @courses_events[i]["start"] = tempday.change(hour: p.st_hour[0..1].to_i, min: p.st_hour[3..4].to_i).to_s
+        @courses_events[i]["end"] = tempday.change(hour: p.end_hour[0..1].to_i, min: p.end_hour[3..4].to_i).to_s
         i += 1
       end
       @courses_events = @courses_events.to_json.html_safe
