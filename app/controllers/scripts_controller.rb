@@ -49,7 +49,7 @@ class ScriptsController < ApplicationController
 
     rescue => e
       @script.destroy unless @script.nil?
-      redirect_to new_script_path, flash: {error: 'Woops ~ Don\'t like it ~'}
+      redirect_to new_script_path, flash: {error: e.message}
     end
   end
 
