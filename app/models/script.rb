@@ -66,7 +66,8 @@ class Script < ActiveRecord::Base
       end
 
       result
-    rescue
+    rescue => e
+      raise if Rails.env.development?
       "Can't do it, sorry :(. Please check that you have correctly copied your timetable."
     end
   end

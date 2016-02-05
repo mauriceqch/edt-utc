@@ -48,6 +48,7 @@ class ScriptsController < ApplicationController
       @courses_events = @courses_events.to_json.html_safe
 
     rescue => e
+      raise e if Rails.env.development?
       @script.destroy unless @script.nil?
       redirect_to new_script_path, flash: {error: e.message}
     end
@@ -109,7 +110,8 @@ class ScriptsController < ApplicationController
       cal = @script.to_ical
       cal.publish
       render inline: cal.to_ical, content_type: 'text/calendar'
-    rescue
+    rescue => e
+      raise e if Rails.env.development?
       render inline: "Woops, that didn't quite work !"
     end
   end
