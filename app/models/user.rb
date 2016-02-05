@@ -8,6 +8,7 @@
 #  updated_at :datetime         not null
 #  cn         :string           default(""), not null
 #  mail       :string           default(""), not null
+#  is_admin   :boolean          default(FALSE)
 #
 
 class User < ActiveRecord::Base
