@@ -1,0 +1,31 @@
+\documentclass[12pt]{article}
+\usepackage{<%= Rails.root.join('app', 'views', 'scripts', 'schedule') %>} 
+
+\CellHeight{.4in}
+\CellWidth{.925in}
+\TimeRange{08:00-20:00}
+\SubUnits{30}
+\BeginOn{Monday}
+\TextSize{\tiny}
+\SixDay
+
+\NewAppointment{class}{dark}{black}
+\NewAppointment{meeting}{red}{white}
+\NewAppointment{workshop}{green}{blue}
+
+\begin{document}
+
+\begin{schedule}[<%= current_user.cn %>]%
+  <% @parsed_script.each do |p| %>
+    \<%= if p.type[0] == 'C'
+          "class"
+        elsif p.type[0..1] == 'TD'
+          "workshop"
+        else
+          "meeting"
+        end %>{<%= p.course %> - <%= p.type %>}{<%= p.classroom %>}{<%= p.day %>}{<%= p.st_hour %>-<%= p.end_hour %>}
+  <% end %>
+\end{schedule}%
+
+\end{document}
+

@@ -5,7 +5,7 @@
 # cal = controller.interpret_parsed_script(parsed_script)
 
 class ScriptsController < ApplicationController
-  before_action :set_script, only: [:show, :edit, :update, :destroy, :export]
+  before_action :set_script, only: [:show, :edit, :update, :destroy, :export, :pdf]
   require 'icalendar'
 
   def index
@@ -114,6 +114,22 @@ class ScriptsController < ApplicationController
       raise e if Rails.env.development?
       render inline: "Woops, that didn't quite work !"
     end
+  end
+
+  def pdf
+   @parsed_script = @script.parse
+
+      # construct array of courses
+      @courses = Array.new(@parsed_script.length)
+      @parsed_script.each do |p|
+        @courses.push(p.course) unless p.course.in?(@courses)
+      end
+
+    @parsed_script.each do |p|
+      p.day = p.day == 3 ? 'Th' : Date::DAYNAMES[(p.day+1)%7][0]
+    end
+
+    render 'scripts/pdf.pdf.rtex' 
   end
 
   private

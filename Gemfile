@@ -1,6 +1,5 @@
 source 'https://rubygems.org'
 
-
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.1'
 # PostgreSQL database
@@ -46,6 +45,8 @@ gem "font-awesome-rails"
 gem 'jquery-minicolors-rails'
 
 gem 'rails_admin'
+
+gem 'rtex', :git => 'git@github.com:asee/rtex.git'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

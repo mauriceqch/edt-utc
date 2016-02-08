@@ -7,6 +7,8 @@ Rails.application.routes.draw do
   devise_for :user
 
   get 'scripts/:id/export.ics' => 'scripts#export'
+  get 'scripts/:id/pdf.pdf' => 'scripts#pdf'
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
