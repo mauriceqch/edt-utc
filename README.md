@@ -34,8 +34,8 @@ The format is the following :
 
 Currently, the parsing is done using this regex :
 
-    (\w+)\s*(\w+)\s*(\d*)\s*(\w+)[\.]*\s*(\d+:\d+)-(\d\d:\d\d),F(\d),S=\s*(\w*).*
-
+   (\w+)\s*([a-zA-Z]+)\s*(\d*)\s*(\w+)[\.]*\s*(\d+:\d+)-(\d\d:\d\d),F(\d),S=\s*(\w*).*
+ 
 The application tries to match the regex with each of the lines after some pre-processing.
 If the regex fails to recognize the text in the line, then a fallback method tries to parse the line using ruby.
 

@@ -7,7 +7,7 @@ class Course
   # Analyze the line and create a Course object containing the information
   # First, try with regex, fallback on ruby parsing
   def initialize(line)
-    match = /(\w+)\s*(\w+)\s*(\d*)\s*(\w+)[\.]*\s*(\d+:\d+)-(\d\d:\d\d),F(\d),S=\s*(\w*).*/.match(line.join(' '))
+    match = /(\w+)\s*([a-zA-Z]+)\s*(\d*)\s*(\w+)[\.]*\s*(\d+:\d+)-(\d\d:\d\d),F(\d),S=\s*(\w*).*/.match(line.join(' '))
     if match
       captures = match.captures
       # There should be 8 captures
