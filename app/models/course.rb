@@ -2,18 +2,18 @@ class Course
   # Non persisted model (not saved into database)
   include ActiveModel::Model
 
-  attr_accessor :course, :type, :day, :st_hour, :end_hour, :frequency, :classroom
+  attr_accessor :course, :type, :week, :day, :st_hour, :end_hour, :frequency, :classroom
 
   # Analyze the line and create a Course object containing the information
   # First, try with regex, fallback on ruby parsing
   def initialize(line)
-    match = /(\w+)\s*([a-zA-Z]+)\s*(\d*)\s*(\w+)[\.]*\s*(\d+:\d+)-(\d\d:\d\d),F(\d),S=\s*(\w*).*/.match(line.join(' '))
+    match = /(\w+)\s*([a-zA-Z]+)\s*(\d*)\s*([A|B]{0,1})\s*(\w+)[\.]*\s*(\d+:\d+)-(\d\d:\d\d),F(\d),S=\s*(\w*).*/.match(line.join(' '))
     if match
       captures = match.captures
-      # There should be 8 captures
-      # course, type, group, day, st_hour, end_hour, frequency, classroom
-      if captures.length == 8
-        @course, @type, group, @day, @st_hour, @end_hour, @frequency, @classroom = captures
+      # There should be 9 captures
+      # course, type, group, week, day, st_hour, end_hour, frequency, classroom
+      if captures.length == 9
+        @course, @type, group, @week, @day, @st_hour, @end_hour, @frequency, @classroom = captures
         @type = translate_type @type
         @day = translate_day @day
         @type += group
@@ -65,18 +65,20 @@ class Course
       # "D" for example
       @type = translate_type(line[i]) unless translate_type(line[i]).nil?
 
-      # If it's not 'C' then there is another field in the line
-      # Type additional info : number of group
-      # Example : for "D 1" the number of the group is "1"
-      if line[i] != 'C'
-        i += 1
-        @type += line[i]
-      end
+      i += 1
+      @type += line[i]
+    end
+
+    i += 1
+    # Check if it is not the week
+    if (line[i] == "A") || (line[i] == "B")
+      # Week : A or B
+      @week = line[i]
+      i += 1
     end
 
     # Field 2 or 3 depending on type value
     # Day
-    i += 1
     @day = translate_day(line[i].gsub('.', ''))
 
     # Field 3 or 4 depending on type value
