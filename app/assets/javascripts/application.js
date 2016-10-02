@@ -20,5 +20,15 @@
 //= require html2canvas
 //= require randomColor
 //= require jquery.minicolors
+//= require pickadate/picker
+//= require pickadate/picker.date
+//= require_self
+
+$(function() {
+  $('.datepicker').pickadate({
+    format: 'yyyy-mm-dd'
+  });  
+})
+
 
 

@@ -47,6 +47,8 @@ class ScriptsController < ApplicationController
       end
       @courses_events = @courses_events.to_json.html_safe
 
+      @semester_start_date = @script.semester_start.to_date
+      @semester_end_date = @script.semester_end.to_date
     rescue => e
       raise e if Rails.env.development?
       @script.destroy unless @script.nil?
@@ -107,6 +109,10 @@ class ScriptsController < ApplicationController
 
   def export
     begin
+      if params[:semester_start_date].present? && params[:semester_end_date]
+        @script.semester_start = params[:semester_start_date].to_date.to_datetime
+        @script.semester_end = (params[:semester_end_date].to_date + 1.day).to_datetime
+      end
       cal = @script.to_ical
       cal.publish
       render inline: cal.to_ical, content_type: 'text/calendar'

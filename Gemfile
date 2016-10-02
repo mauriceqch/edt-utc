@@ -48,6 +48,9 @@ gem 'rails_admin'
 
 gem 'rtex', :git => 'git@github.com:asee/rtex.git'
 
+ # Datepicker
+ gem 'pickadate-rails'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
@@ -59,6 +62,8 @@ group :development, :test do
   gem 'spring'
 
   gem 'quiet_assets'
+
+  gem 'rack-mini-profiler', '~> 0.10.1'
 end
 
 ruby '2.2.0'

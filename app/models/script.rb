@@ -17,6 +17,8 @@ class Script < ActiveRecord::Base
   validates :user, presence: true, uniqueness: true
   validates :script, presence: true
 
+  attr_accessor :semester_start, :semester_end
+
   belongs_to :user
 
   def user_username
@@ -78,11 +80,11 @@ class Script < ActiveRecord::Base
   ## Output : Ical file
   ###################################################
   def semester_start
-    DateTime.new(2015, 9, 1)
+    @semester_start ||= DateTime.new(2015, 9, 1)
   end
 
   def semester_end
-    DateTime.new(2016, 1, 8)
+    @semester_end ||= DateTime.new(2016, 1, 8)
   end
 
   def holiday_all

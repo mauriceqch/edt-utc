@@ -74,19 +74,33 @@
 <div class="row">
   <div class="col-md-10 col-md-offset-1 col-sm-12 col-lg-8 col-lg-offset-2">
     <div class="text-center">
+      <div id="pdfv2button" class="btn btn-default">
+        <span id="calendar_btn_pdf_2" class=""><%= link_to 'To PDF v2', { action: 'pdf' }, { style: 'color: black;' } %></span>
+      </div>
+    </div><br>
+    <div>
+      <h2>ICS export</h2>
+      <div>
+        <%= form_tag ics_export_path, method: :get do %>
+          <%= label_tag :semester_start_date %>
+          <%= text_field_tag :semester_start_date, @semester_start_date, class: 'form-control datepicker' %>
+          <%= label_tag :semester_end_date %>
+          <%= text_field_tag :semester_end_date, @semester_end_date, class: 'form-control datepicker' %>
+          <%= submit_tag 'Export ICS', class: 'btn btn-default' %>
+        <% end %>
+      </div>
+    </div>
+    <div>
+      <h2>Graphic export</h2>
+    </div>
+    <div class="text-center">
       <div id="pngbutton" class="btn btn-default">
         <span id="calendar_btn_png" class=""><input type="hidden" id="zz_png" value="" />To PNG</span>
       </div>
       <div id="pdfbutton" class="btn btn-default">
         <span id="calendar_btn_pdf" class=""><input type="hidden" id="zz_pdf" value="" />To PDF</span>
       </div>
-      <div id="icsbutton" class="btn btn-default">
-        <span id="calendar_btn_pdf_2" class=""><%= link_to 'To PDF v2', { action: 'pdf' }, { style: 'color: black;' } %></span>
-      </div>
-      <div id="icsbutton" class="btn btn-default">
-        <span id="calendar_btn_ics" class=""><%= link_to 'Export ICS', { action: 'export' }, { style: 'color: black;' } %></span>
-      </div>
-    </div><br>
+    </div>
     <div class="form-group form-inline clearfix">
       <div class="pull-left">
         <input id="selected_color" class="form-control" style="width: 150px"></input>
