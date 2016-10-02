@@ -134,7 +134,6 @@ class ScriptsController < ApplicationController
     @parsed_script.each do |p|
       p.day = p.day == 3 ? 'Th' : Date::DAYNAMES[(p.day+1)%7][0]
     end
-
     render 'scripts/pdf.pdf.rtex' 
   end
 

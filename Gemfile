@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.1'
 # PostgreSQL database
-gem 'pg'
+gem 'sqlite3'
 # For heroku
 gem 'rails_12factor', group: :production
 # Use SCSS for stylesheets
@@ -46,7 +46,7 @@ gem 'jquery-minicolors-rails'
 
 gem 'rails_admin'
 
-gem 'rtex', :git => 'git@github.com:asee/rtex.git'
+gem 'rtex', :git => 'https://github.com/asee/rtex.git'
 
  # Datepicker
  gem 'pickadate-rails'
