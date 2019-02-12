@@ -1,3 +1,8 @@
+## Notes
+
+This repository is unmaintained and probably outdated by now.
+It is kept online as it can be an interesting starting point to understand the text format.
+
 ## Ruby version
 This app uses Ruby 2.2.0.
 
